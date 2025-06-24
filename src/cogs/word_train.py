@@ -23,6 +23,7 @@ class WordTrain(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        print(f"Received message: {message.content} from {message.author.name}")
         if message.author == self.bot.user:
             return
         if message.content.strip().startswith("/"):
@@ -35,15 +36,15 @@ class WordTrain(commands.Cog):
             return  # No active game
 
         words = message.content.strip().lower()
-        if game.is_game_end(words.split()[-1]):
-            await message.channel.send(WORDTRAIN_STRINGS["game_end"].format(words.split()[-1]))
-            game.reset()
-            return
         
         add_word_result = game.add_word(words, message.author.name)
         if add_word_result is True:
             await message.add_reaction("✅")
-            return
+            if game.is_game_end(words.split()[-1]):
+                await message.channel.send(WORDTRAIN_STRINGS["game_end"].format(words.split()[-1]))
+                await message.channel.send(WORDTRAIN_STRINGS["start"])
+                game.reset()
+                return
         elif add_word_result is ErrorCode.USED_WORD:
             await message.add_reaction("❌")
             await message.channel.send(ERROR_STRINGS[ErrorCode.USED_WORD])
@@ -56,8 +57,6 @@ class WordTrain(commands.Cog):
         elif add_word_result is ErrorCode.LAST_USER:
             await message.add_reaction("❌")
             await message.channel.send(ERROR_STRINGS[ErrorCode.LAST_USER].format(game.last_user))
-        else:
-            await message.channel.send(WORDTRAIN_STRINGS["unknown_error"])
 
         # Required to keep bot commands working
         await self.bot.process_commands(message)

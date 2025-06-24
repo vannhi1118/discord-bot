@@ -47,6 +47,7 @@ class GamePlay:
         print("GamePlay reset")
 
     def is_game_end(self, last_word):
-        if len(word_set[last_word]) == 1:
+        print(f"Checking possible composite words: {word_set[last_word] if last_word in word_set else 'not found'}")
+        if last_word not in word_set or len(word_set[last_word]) < 2:
             return True
         return False
