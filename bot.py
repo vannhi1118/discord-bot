@@ -11,10 +11,14 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="/", intents=intents)
 
-# Load cogs
+async def main():
+    # Load cogs
+    await bot.load_extension("cogs.word_train")
+    await bot.start(TOKEN)
+
 @bot.event
 async def on_ready():
     print(f"✅ Bot is online as {bot.user}")
-    await bot.load_extension("cogs.word_train")
 
-bot.run(TOKEN)
+import asyncio
+asyncio.run(main())
