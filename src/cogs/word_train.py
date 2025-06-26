@@ -21,6 +21,19 @@ class WordTrain(commands.Cog):
         else:
             await ctx.send(WORDTRAIN_STRINGS["no_train"])
 
+    @commands.command(name="gethint")
+    async def gethint(self, ctx, *, message: str):
+        game = self.channel_games.get(ctx.channel.id)
+        if not game:
+            return  # No active game
+
+        keyword = message.strip().lower()
+        suggestion = game.get_hint(keyword)
+        if suggestion:
+            await ctx.send(f"✅ Gợi ý từ cho **{keyword}** là: **{suggestion}**")
+        else:
+            await ctx.send(f"❌ Không có từ nào bắt đầu bằng **{keyword}** trong từ điển.")
+
     @commands.Cog.listener()
     async def on_message(self, message):
         print(f"Received message: {message.content} from {message.author.name}")
